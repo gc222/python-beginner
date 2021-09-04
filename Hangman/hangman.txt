@@ -1,0 +1,28 @@
+# how do we know when a letter is guessed?
+# we need to compare user input with the word
+# instead of simply using "in" keyword to see if letter is in the word
+# we use a set because duplicate letters are not recorded
+
+# new letter compared to recorded letters
+# if letter is new add to recorded letters and see if in word
+# else reject letter
+
+# set of recorded letters
+
+
+# This body of code will print out the word
+word = "bed"   
+someList = []
+used_letters = set("esd")
+
+
+for letter in word:
+    if letter in used_letters:
+        someList.append(letter)
+
+    else:
+        someList.append('_')
+
+str = ' '.join(someList)         # join elements without space
+print(someList)
+print(str.upper())
