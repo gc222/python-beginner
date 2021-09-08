@@ -11,6 +11,12 @@ pygame.mixer.init()         # load sounds
 # be redrawn at x + 5 pixels at every frame, thus it moves at 300 pixels per second.
 # you can see it by removing the line, WIN.blit(SPACE, (0, 0)), run file to see 
 
+# notice how the spaceship movement and bullet user input is different. The spaceship
+# movement is within the while loop where it is possible to hold down the arrow or
+# wasd keys to consistently move the spaceship around. The bullets are placed inside
+# a for loop which records events, this only allows one bullet to be shot per button press
+# rather than a button hold.  
+
 # Tasks:
 # setup loop and event body as first body of code (ALWAYS HAVE LOOP AND EVENT) 
 # setup window colour and size
@@ -19,35 +25,38 @@ pygame.mixer.init()         # load sounds
 # prevent spaceship from moving off window and middle border
 # setup key listener key.get_pressed() and map keys to movement (def yellow_movement)
 # setup bullet using .Rect and map keys and add colour
-# 
+
 
 # set window dimension
 WIDTH, HEIGHT = 900, 500
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))      # set window size
 pygame.display.set_caption("First Game!")           # set window name
 
+# COLOURS
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 
 BORDER = pygame.Rect(WIDTH/2 - 5, 0 , 10, HEIGHT)   # line in middle
 
+# SOUNDS
 BULLET_HIT_SOUND = pygame.mixer.Sound(os.path.join('Assets', 'Grenade+1.mp3'))
 BULLET_FIRE_SOUND = pygame.mixer.Sound(os.path.join('Assets', 'Gun+Silencer.mp3'))
 
+# VARIABLES
 YELLOW_WINS = "Yellow Wins!"
 RED_WINS = "Red Wins!"
 
 HEALTH_FONT = pygame.font.SysFont('comicsans', 40)
 WINNER_FONT = pygame.font.SysFont('comicsans', 100)
 
-FPS = 60                                            
-VEL = 5                                             # velocity
-BULLET_VEL = 7                                      # bullet velocity
+FPS = 120                                            
+VEL = 3                                             # velocity
+BULLET_VEL = 5                                      # bullet velocity
 MAX_BULLETS = 3                                      
 SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 55, 40          
 
-# create two new events for bullet colliding with spaceship 
+# EVENTS: create two new events for bullet colliding with spaceship 
 YELLOW_HIT = pygame.USEREVENT + 1
 RED_HIT = pygame.USEREVENT + 2
 
@@ -139,7 +148,7 @@ def draw_winner(text):
         draw_text = WINNER_FONT.render(text, 1, RED)
     WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width()/2, HEIGHT/2 - draw_text.get_height()/2))
     pygame.display.update()
-    pygame.time.delay(5000)               # display for set time and reset game (5 seconds)
+    pygame.time.delay(3000)               # display for set time and reset game (3 seconds)
 
 
 
@@ -157,6 +166,8 @@ def main():
     red_health = 10
     yellow_health = 10
 
+    winner_text = ""
+
     # one loop essentially means one frame, each frame/loop draws the surfaces,
     # records event (k)
     clock = pygame.time.Clock()
@@ -164,8 +175,8 @@ def main():
     while run:    
         clock.tick(FPS)     # set while loop to run at 60fps b/c code throttles
 
-        # record event with for loop over event.get()
-        for event in pygame.event.get():    # events are a list of: start, quit etc.
+        # loops over all the events occurring during playing the game
+        for event in pygame.event.get():    
             if event.type == pygame.QUIT:   # e.g. quitting the game window will end loop
                 run = False    
                 pygame.quit()                # stop loop and quit game                       
@@ -173,7 +184,7 @@ def main():
             # we don't handle key pressed like the spaceship, we use events 
             # we place it here
             if event.type == pygame.KEYDOWN:        # if key pressed event
-                if event.key == pygame.K_LCTRL and len(yellow_bullets) < MAX_BULLETS:
+                if event.key == pygame.K_LCTRL and len(yellow_bullets) < MAX_BULLETS:  
                     # the bullet will be on the right of the spaceship with w: 10px, h: 5px
                     bullet = pygame.Rect(yellow.x + yellow.width, yellow.y + yellow.height/2 + 4, 10, 5)
                     yellow_bullets.append(bullet)
@@ -192,7 +203,7 @@ def main():
                 yellow_health -= 1
                 BULLET_HIT_SOUND.play()
 
-        winner_text = ""
+        
         if red_health <= 0:
             winner_text = YELLOW_WINS
         if yellow_health <= 0:
